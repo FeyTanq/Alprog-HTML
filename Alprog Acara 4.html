@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Resmi Kabupaten Lumajang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #f0f0f0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e5799 0%,#207cca 51%,#2989d8 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .nav {
+            background-color: rgba(51, 51, 51, 0.8);
+            overflow: hidden;
+            position: fixed;
+            top: 100px;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .section {
+            min-height: 100vh;
+            padding: 120px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+      
+        #beranda {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://disparbud.lumajangkab.go.id/uploads/berita/kab.jpg') no-repeat center center;
+            background-size: cover;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        #beranda h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        #beranda p {
+            font-size: 1.2em;
+            max-width: 600px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        #profil, #layanan, #berita, #peta, #kontak, #penduduk {
+            background-color: white;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 10px;
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #1e5799;
+            margin-bottom: 10px;
+        }
+
+        /* Styling untuk galeri foto */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+            width: 100%;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            aspect-ratio: 16/9;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            font-size: 0.9em;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+
+        .gallery-section {
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        .gallery-section h3 {
+            color: #1e5799;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Styling untuk tabel penduduk */
+        .population-table {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .population-table th,
+        .population-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .population-table th {
+            background-color: #1e5799;
+            color: white;
+            font-weight: 600;
+        }
+
+        .population-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .population-table tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .nav a {
+                float: none;
+                display: block;
+                text-align: left;
+            }
+
+            .population-table {
+                font-size: 14px;
+            }
+
+            .population-table th,
+            .population-table td {
+                padding: 8px 10px;
+            }
+
+            .photo-gallery {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            
+        }
+        @media (max-width: 768px) {
+            .population-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .district-logo {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Kabupaten Lumajang</h1>
+    </header>
+
+    <nav class="nav">
+        <a href="#beranda">Beranda</a>
+        <a href="#profil">Profil</a>
+        <a href="#penduduk">Data Penduduk</a>
+        <a href="#peta">Peta</a>
+        <a href="#kontak">Kontak</a>
+    </nav>
+
+    <main>
+        <section id="beranda" class="section">
+            <h2>Selamat Datang di Website Resmi Kabupaten Lumajang</h2>
+            <p>Temukan Keindahan dan Potensi Daerah Kami</p>
+        </section>
+
+        <section id="profil" class="section">
+            <div class="content">
+                <h2>Profil Kabupaten</h2>
+                <p>Kabupaten Lumajang adalah daerah yang kaya akan budaya dan sumber daya alam. Kabupaten Lumajang berada di wilayah bagian selatan Provinsi Jawa Timur, kabupaten ini menawarkan keindahan alam yang menakjubkan dan kehidupan masyarakat yang harmonis.</p>
+                
+                <div class="gallery-section">
+                    <h3>Keindahan Daerah Lumajang</h3>
+                    <div class="photo-gallery">
+                        <div class="gallery-item">
+                            <img src="https://peakvisor.com/photo/gunung-semeru-1.jpg" 
+                                 alt="Gunung Semeru">
+                            <div class="gallery-caption">Gunung Semeru - Puncak Tertinggi di Pulau Jawa</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://www.nativeindonesia.com/foto/2023/01/pantai-bambang-lumajang.jpg" 
+                                 alt="Pantai Bambang">
+                            <div class="gallery-caption">Pantai Bambang - Keindahan Pesisir Selatan</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://ik.imagekit.io/tvlk/blog/2021/08/Destinasi-Wisata-di-Lumajang-Air-Terjun-Tumpak-Sewu-Shutterstock.jpg?tr=dpr-2,w-675" 
+                                 alt="Air Terjun Tumpak Sewu">
+                            <div class="gallery-caption">Air Terjun Tumpak Sewu - Si Cantik dari Lumajang</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://img.kontenjatim.id/articles/archive_20230818/pura-mandara-giri-semeru-agung-20230818-203412.jpg" 
+                                 alt="Pura Mandara Giri">
+                            <div class="gallery-caption">Pura Mandara Giri - Warisan Budaya Hindu</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://cdn1-production-images-kly.akamaized.net/qbGCiZ6QI7dY0FHAHde4hDxq62k=/1200x675/smart/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/16327/original/plumajang.jpg" 
+                                 alt="Perkebunan Pisang">
+                            <div class="gallery-caption">Perkebunan Pisang Agung - Ikon Pertanian Lumajang</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://3.bp.blogspot.com/-5t1bqklNGYc/UdWEwu5H5iI/AAAAAAAAARY/9quSVbZ7iBI/s1600/alun-alun.jpg" 
+                                 alt="Alun-alun Lumajang">
+                            <div class="gallery-caption">Alun-alun Lumajang - Pusat Aktivitas Masyarakat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="penduduk" class="section">
+            <div class="content">
+                <h2>Data Kependudukan</h2>
+                <div class="population-section">
+                    <div class="district-logo">
+                        <img src="https://iconlogovector.com/uploads/images/2023/05/md-1fafca3426fa56c4eea010b8b9b064a071.png   " 
+                             alt="Logo Kabupaten Lumajang">
+                        <p><strong>Kabupaten Lumajang</strong></p>
+                    </div>
+                    <div class="population-content">
+                        <p>Berikut adalah data persebaran penduduk Kabupaten Lumajang berdasarkan kecamatan:</p>
+                        <table class="population-table">
+                    <thead>
+                        <tr>
+                            <th>Kecamatan</th>
+                            <th>Jumlah Penduduk</th>
+                            <th>Laki-laki</th>
+                            <th>Perempuan</th>
+                            <th>Kepadatan (/km²)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Lumajang</td>
+                            <td>82,456</td>
+                            <td>40,223</td>
+                            <td>42,233</td>
+                            <td>1,245</td>
+                        </tr>
+                        <tr>
+                            <td>Sukodono</td>
+                            <td>65,789</td>
+                            <td>32,890</td>
+                            <td>32,899</td>
+                            <td>987</td>
+                        </tr>
+                        <tr>
+                            <td>Tekung</td>
+                            <td>45,678</td>
+                            <td>22,839</td>
+                            <td>22,839</td>
+                            <td>756</td>
+                        </tr>
+                        <tr>
+                            <td>Kunir</td>
+                            <td>38,912</td>
+                            <td>19,456</td>
+                            <td>19,456</td>
+                            <td>645</td>
+                        </tr>
+                        <tr>
+                            <td>Yosowilangun</td>
+                            <td>52,345</td>
+                            <td>26,172</td>
+                            <td>26,173</td>
+                            <td>867</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 20px; font-size: 0.9em; color: #666;">
+                    *Data per tahun 2024
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+        <section id="peta" class="section">
+            <div class="content">
+                <h2>Peta Interaktif Kabupaten</h2>
+                <p>Jelajahi wilayah Kabupaten Lumajang melalui peta interaktif di bawah ini:</p>
+                <div id="map"></div>
+            </div>
+        </section>
+
+        <section id="kontak" class="section">
+            <div class="content">
+                <h2>Hubungi Kami</h2>
+                <p>Alamat: Jl. Rahasia No. 123, Kota Lumajang, Kabupaten Lumajang</p>
+                <p>Email: info@kabupatenlumajang.go.id</p>
+                <p>Telepon: (0123) 456789</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Kabupaten Lumajang.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Inisialisasi peta
+        var map = L.map('map').setView([-8.1345, 113.2225], 10); // Koordinat Lumajang
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Tambahkan marker untuk lokasi penting
+        L.marker([-8.1345, 113.2225]).addTo(map)
+            .bindPopup('Pusat Kota Lumajang')
+            .openPopup();
+    </script>
+</body>
+</html>
